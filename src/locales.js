@@ -3,7 +3,7 @@ const ru = {
     subscriptionForm: {
       feedback: {
         invalidUrl: 'Ссылка должна быть валидным URL',
-        requiredField: 'Это обязательное поле',
+        requiredField: 'Не должно быть пустым',
         duplicatedValue: 'RSS уже существует',
         invalidRss: 'Ресурс не содержит валидный RSS',
         unknownError: 'Неизвестная ошибка. Что-то пошло не так.',
