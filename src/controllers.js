@@ -51,26 +51,31 @@ const onSubscriptionFormSubmit = (state, urlSchema) => (e) => {
   e.preventDefault();
 };
 
-const subscribeToFeedUpdates = (state, interval = 5000) => setInterval(
-  () => Promise.allSettled(state.feedUrls.map(loadFeedContents))
-    .then((results) => results
-      .filter(({ status }) => status === 'fulfilled')
-      .map(({ value }) => {
-        const xmlDoc = parseXmlString(value.data.contents);
-        const error = xmlDoc.querySelector('parsererror');
-        return error ? null : getFeedDetails(xmlDoc);
+const subscribeToFeedUpdates = (state, interval = 5000) => {
+  const timestamp = Date.now();
+
+  setTimeout(
+    () => Promise.allSettled(state.feedUrls.map(loadFeedContents))
+      .then((results) => results
+        .filter(({ status }) => status === 'fulfilled')
+        .map(({ value }) => {
+          const xmlDoc = parseXmlString(value.data.contents);
+          const error = xmlDoc.querySelector('parsererror');
+          return error ? null : getFeedDetails(xmlDoc);
+        })
+        .filter(Boolean)
+        .flatMap(({ items }) => items)
+        .filter((post) => Date.parse(post.publishedAt) >= timestamp))
+      .then((newPosts) => {
+        if (newPosts.length) {
+          state.posts = [...newPosts, ...state.posts];
+        }
       })
-      .filter(Boolean)
-      .flatMap(({ items }) => items)
-      .filter((post) => Date.parse(post.publishedAt) >= (Date.now() - interval)))
-    .then((newPosts) => {
-      if (newPosts.length) {
-        state.posts = [...newPosts, ...state.posts];
-      }
-    })
-    .catch(noop),
-  interval,
-);
+      .catch(noop)
+      .finally(() => subscribeToFeedUpdates(state, interval)),
+    interval,
+  );
+};
 
 const onPostModalOpen = (state) => (e) => {
   const triggerButton = e.relatedTarget;
