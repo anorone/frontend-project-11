@@ -1,4 +1,9 @@
-import { makeAutoObservable, reaction, when } from 'mobx';
+import {
+  makeAutoObservable,
+  reaction,
+  when,
+  configure,
+} from 'mobx';
 import i18next from 'i18next';
 import { string, setLocale } from 'yup';
 import {
@@ -30,6 +35,10 @@ const app = () => {
         postId: '',
       },
     },
+  });
+
+  configure({
+    enforceActions: 'never',
   });
 
   const i18n = i18next.createInstance();
