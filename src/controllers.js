@@ -11,7 +11,6 @@ import { FormStatuses } from './constants';
 const onSubscriptionFormSubmit = (state, urlSchema) => (e) => {
   const formData = new FormData(e.target);
   const rssUrl = formData.get('rss-url');
-  console.log(rssUrl);
   urlSchema.validate(rssUrl)
     .then((url) => {
       state.subscriptionForm = {
@@ -21,7 +20,6 @@ const onSubscriptionFormSubmit = (state, urlSchema) => (e) => {
       return loadFeedContents(url);
     })
     .then(({ data }) => {
-      console.log('validated');
       const xmlDoc = parseXmlString(data.contents);
       const error = xmlDoc.querySelector('parsererror');
 
@@ -43,14 +41,12 @@ const onSubscriptionFormSubmit = (state, urlSchema) => (e) => {
         message: 'subscriptionForm.feedback.rssLoaded',
       };
       e.target.reset();
-      console.log(JSON.stringify(state, null, 2));
     })
     .catch((err) => {
       state.subscriptionForm = {
         status: FormStatuses.FAILED,
         message: getTranslationKeyFromError(err),
       };
-      console.log('error', JSON.stringify(state, null, 2));
     });
   e.preventDefault();
 };
