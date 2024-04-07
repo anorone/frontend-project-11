@@ -32,7 +32,7 @@ const onSubscriptionFormSubmit = (state, urlSchema) => (e) => {
       state.feeds = [newFeed, ...state.feeds];
       state.posts = [...items, ...state.posts];
 
-      return data.status.url;
+      return rssUrl;
     })
     .then((feedUrl) => {
       state.feedUrls.push(feedUrl);
